@@ -1,4 +1,19 @@
+# ===== Backend (Node) =====
 node_modules/
 .env
 *.db
+
+# ===== Android / Gradle =====
+.gradle/
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# ===== Android Studio =====
+.idea/
+*.iml
+
+# ===== macOS =====
 .DS_Store
