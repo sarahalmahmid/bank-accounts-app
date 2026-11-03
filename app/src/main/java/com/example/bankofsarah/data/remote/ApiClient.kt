@@ -1,6 +1,7 @@
 package com.example.bankofsarah.data.remote
 
 import com.example.bankofsarah.BuildConfig
+import com.example.bankofsarah.data.local.TokenStore
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -12,13 +13,15 @@ private const val BASE_URL = "http://10.0.2.2:3000/"
 
 private val json = Json { ignoreUnknownKeys = true }
 
-fun createApiService(): ApiService {
+fun createApiService(tokenStore: TokenStore): ApiService {
     val logging = HttpLoggingInterceptor().apply {
         level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
         else HttpLoggingInterceptor.Level.NONE
+        redactHeader("Authorization")
     }
 
     val client = OkHttpClient.Builder()
+        .addInterceptor(AuthInterceptor(tokenStore))
         .addInterceptor(logging)
         .build()
 

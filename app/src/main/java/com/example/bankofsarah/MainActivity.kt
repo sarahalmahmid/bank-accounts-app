@@ -15,11 +15,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val tokenStore = (application as BankOfSarahApp).container.tokenStore
         setContent {
             BankOfSarahTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppNavHost(modifier = Modifier.padding(innerPadding))
+                    AppNavHost(
+                        tokenStore = tokenStore,
+                        modifier = Modifier.padding(innerPadding),
+                    )
                 }
             }
-        }    }
+        }
+    }
 }
