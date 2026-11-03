@@ -26,8 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bankofsarah.data.remote.AccountDto
@@ -36,14 +38,23 @@ import com.example.bankofsarah.ui.theme.BankOfSarahTheme
 
 @Composable
 fun AccountsScreen(
+    onOpenAccount: (String) -> Unit,
+    onAddNickname: (String) -> Unit,
     viewModel: AccountsViewModel = viewModel(factory = AccountsViewModel.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LifecycleResumeEffect(Unit) {
+        viewModel.loadAccounts()
+        onPauseOrDispose { }
+    }
 
     AccountsContent(
         state = state,
         onRetry = viewModel::loadAccounts,
         onLogout = viewModel::logout,
+        onOpenAccount = onOpenAccount,
+        onAddNickname = onAddNickname,
     )
 }
 
@@ -52,6 +63,8 @@ fun AccountsContent(
     state: AccountsUiState,
     onRetry: () -> Unit,
     onLogout: () -> Unit,
+    onOpenAccount: (String) -> Unit,
+    onAddNickname: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -102,7 +115,8 @@ fun AccountsContent(
                         items(state.accounts, key = { it.accountNumber }) { account ->
                             AccountCard(
                                 account = account,
-                                onAddNicknameClick = { },
+                                onClick = { onOpenAccount(account.accountNumber) },
+                                onAddNicknameClick = { onAddNickname(account.accountNumber) },
                             )
                         }
                     }
@@ -115,16 +129,22 @@ fun AccountsContent(
 @Composable
 private fun AccountCard(
     account: AccountDto,
+    onClick: () -> Unit,
     onAddNicknameClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(modifier = modifier.fillMaxWidth()) {
+    Card(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             val nickname = account.nickname
             if (nickname != null) {
                 Text(
                     text = nickname,
                     style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             } else {
                 Row(
@@ -188,6 +208,8 @@ private fun AccountsContentPreview() {
             ),
             onRetry = {},
             onLogout = {},
+            onOpenAccount = {},
+            onAddNickname = {},
         )
     }
 }

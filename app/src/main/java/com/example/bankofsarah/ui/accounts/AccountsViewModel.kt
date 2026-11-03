@@ -30,11 +30,10 @@ class AccountsViewModel(
     private val _uiState = MutableStateFlow<AccountsUiState>(AccountsUiState.Loading)
     val uiState: StateFlow<AccountsUiState> = _uiState.asStateFlow()
 
-    init {
-        loadAccounts()
-    }
-
     fun loadAccounts() {
+        if (_uiState.value !is AccountsUiState.Success) {
+            _uiState.value = AccountsUiState.Loading
+        }
         _uiState.value = AccountsUiState.Loading
         viewModelScope.launch {
             _uiState.value = try {

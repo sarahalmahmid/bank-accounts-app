@@ -10,3 +10,8 @@ data class AccountDto(
     val balance: Double,
     val nickname: String? = null,
 )
+
+@Serializable
+data class UpdateNicknameRequest(
+    val nickname: String?,
+)
