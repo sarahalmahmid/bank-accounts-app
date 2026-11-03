@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { config } from './config';
 import authRoutes from './routes/auth.routes';
+import accountsRoutes from './routes/accounts.routes';
 
 const app = express();
 app.use(express.json());
@@ -10,6 +11,8 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+
+app.use('/api/accounts', accountsRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({ error: 'Not found' });
